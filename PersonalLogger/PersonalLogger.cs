@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace LuxuzDev.PersonalLogger;
 
@@ -13,8 +14,11 @@ public static class PersonalLogger
 
     private static Process? _consoleProcess;
     private static bool _initialized = false;
+    private static TelegramService _service;
+    
+    
 
-    public static void Initialize(string? logFilePath = null)
+    public static void Initialize(TelegramService? service = null, string? logFilePath = null)
     {
         if (_initialized) return;
 
@@ -24,6 +28,8 @@ public static class PersonalLogger
         // Crear carpeta de logs
         var logDir = Path.GetDirectoryName(_logFilePath)!;
         Directory.CreateDirectory(logDir);
+        
+        if(service is not null)_service = service;
 
         _initialized = true;
 
@@ -32,6 +38,9 @@ public static class PersonalLogger
             StartConsole();
             System.Threading.Thread.Sleep(1000);
         }
+
+       
+
     }
 
     public static void Log(string message, LogType type = LogType.Info)
@@ -47,6 +56,25 @@ public static class PersonalLogger
 
         // Guardar en archivo UTF-8
         File.AppendAllText(_logFilePath, logMessage + Environment.NewLine, Encoding.UTF8);
+    }
+    
+    public static void Log(string message, bool sendTelegram, ITelegramBotSettings telegramBotSettings,
+        string endpoint,string path, string method,LogType type = LogType.Info)
+    {
+        
+        Log(message, type);
+
+        // 2. Envío a Telegram si se solicita y el servicio existe
+        if (sendTelegram && _service != null)
+        {
+            
+            Task.Run(async () => {
+                try {
+                    await _service.SendAlertAsync(message,endpoint,path,method);
+                } catch { }
+            });
+        }
+        
     }
 
     private static void StartConsole()
