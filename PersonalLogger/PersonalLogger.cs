@@ -13,9 +13,7 @@ public static class PersonalLogger
         Path.Combine(AppContext.BaseDirectory, "Logs", "personal.log");
 
     private static Process? _consoleProcess;
-    private static bool _initialized = false;
-    private static TelegramService _service;
-    
+    private static bool _initialized = false;    
     
 
     private static IExternalNotifier? _notifier;
@@ -35,8 +33,7 @@ public static class PersonalLogger
         // Crear carpeta de logs
         var logDir = Path.GetDirectoryName(_logFilePath)!;
         Directory.CreateDirectory(logDir);
-        
-        if(service is not null)_service = service;
+       
 
         _initialized = true;
 
