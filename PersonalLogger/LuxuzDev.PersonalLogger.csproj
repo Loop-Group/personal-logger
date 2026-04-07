@@ -6,8 +6,7 @@
 		<!-- Información del paquete -->
 		<PackageId>Loop.PersonalLogger</PackageId>
 		<Version>1.0.4</Version>
-		<Authors>Angel Hernández</Authors>
-		<Authors>Anthony Perdomo</Authors>
+		<Authors>Angel Hernández, Anthony Perdomo</Authors>
 		<Company>Loop</Company>
 		<Description>Logger personal con consola PowerShell independiente, colores por tipo y archivo UTF-8.</Description>
 		<PackageTags>logging logger console file logs</PackageTags>
