@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace LuxuzDev.PersonalLogger;
 
@@ -13,6 +14,13 @@ public static class PersonalLogger
 
     private static Process? _consoleProcess;
     private static bool _initialized = false;
+
+    private static IExternalNotifier? _notifier;
+
+    public static void Configure(IExternalNotifier notifier)
+    {
+        _notifier = notifier;
+    }
 
     public static void Initialize(string? logFilePath = null)
     {
@@ -34,19 +42,34 @@ public static class PersonalLogger
         }
     }
 
-    public static void Log(string message, LogType type = LogType.Info)
+    public static void Log(string message, LogType type = LogType.Info, bool notify = false)
     {
         if (!_initialized)
             Initialize();
 
         string typeName = type.ToString().ToUpper();
-        string logMessage = $"[{typeName}] {DateTime.Now:HH:mm:ss} {message}";
+        string logMessage = $"[{typeName}] {DateTime.Now:dd/MM/yyyy HH:mm:ss} {message}";
 
         // Consola principal (sin colores)
         Console.WriteLine(logMessage);
 
         // Guardar en archivo UTF-8
         File.AppendAllText(_logFilePath, logMessage + Environment.NewLine, Encoding.UTF8);
+
+        if (notify && _notifier != null)
+        {
+            _ = Task.Run(async () =>
+            {
+                try
+                {
+                    await _notifier.NotifyAsync(logMessage);
+                }
+                catch (Exception ex)
+                {
+                    PersonalLogger.Log($"[LOGGER ERROR] Enviar notificacion fallida: {ex.Message}",LogType.Error);
+                }
+            });
+        }
     }
 
     private static void StartConsole()
