@@ -1,6 +1,6 @@
 ﻿using System.Threading.Tasks;
 
-namespace LuxuzDev.PersonalLogger;
+namespace Loop.PersonalLogger;
 
 public interface IExternalNotifier
 {

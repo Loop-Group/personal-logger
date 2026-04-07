@@ -1,4 +1,4 @@
-﻿namespace LuxuzDev.PersonalLogger;
+﻿namespace Loop.PersonalLogger;
 
 /// <summary>
 /// Tipos de mensajes para colorear los logs

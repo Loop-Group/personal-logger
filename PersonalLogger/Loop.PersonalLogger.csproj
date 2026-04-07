@@ -5,7 +5,7 @@
 
 		<!-- Información del paquete -->
 		<PackageId>Loop.PersonalLogger</PackageId>
-		<Version>1.0.4</Version>
+		<Version>1.0.6</Version>
 		<Authors>Angel Hernández, Anthony Perdomo</Authors>
 		<Company>Loop</Company>
 		<Description>Logger personal con consola PowerShell independiente, colores por tipo y archivo UTF-8.</Description>
@@ -22,7 +22,7 @@
 	<ItemGroup>
 		<None Include="../README.md" Pack="true" PackagePath="\" />
 		<None Include="../icon.png" Pack="true" PackagePath="\" />
-	</ItemGroup>
+	</ItemGroup> 
 
 
 
