@@ -4,13 +4,14 @@
 		<TargetFramework>net9.0</TargetFramework>
 
 		<!-- Información del paquete -->
-		<PackageId>LuxuzDev.PersonalLogger</PackageId>
-		<Version>1.0.1</Version>
+		<PackageId>Loop.PersonalLogger</PackageId>
+		<Version>1.0.4</Version>
 		<Authors>Angel Hernández</Authors>
-		<Company>LuxuzDev</Company>
+		<Authors>Anthony Perdomo</Authors>
+		<Company>Loop</Company>
 		<Description>Logger personal con consola PowerShell independiente, colores por tipo y archivo UTF-8.</Description>
 		<PackageTags>logging logger console file logs</PackageTags>
-		<RepositoryUrl>https://github.com/LuxuzDev/PersonalLogger</RepositoryUrl>
+		<RepositoryUrl>https://github.com/Loop-Group/PersonalLogger</RepositoryUrl>
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>
 		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
 		<Nullable>enable</Nullable>

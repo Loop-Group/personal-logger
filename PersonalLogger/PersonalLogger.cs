@@ -18,7 +18,14 @@ public static class PersonalLogger
     
     
 
-    public static void Initialize(TelegramService? service = null, string? logFilePath = null)
+    private static IExternalNotifier? _notifier;
+
+    public static void Configure(IExternalNotifier notifier)
+    {
+        _notifier = notifier;
+    }
+
+    public static void Initialize(string? logFilePath = null)
     {
         if (_initialized) return;
 
@@ -38,44 +45,38 @@ public static class PersonalLogger
             StartConsole();
             System.Threading.Thread.Sleep(1000);
         }
-
-       
-
     }
 
-    public static void Log(string message, LogType type = LogType.Info)
+    public static void Log(string message, LogType type = LogType.Info, bool notify = false)
     {
         if (!_initialized)
             Initialize();
 
         string typeName = type.ToString().ToUpper();
-        string logMessage = $"[{typeName}] {DateTime.Now:HH:mm:ss} {message}";
+        string logMessage = $"[{typeName}] {DateTime.Now:dd/MM/yyyy HH:mm:ss} {message}";
 
         // Consola principal (sin colores)
         Console.WriteLine(logMessage);
 
         // Guardar en archivo UTF-8
         File.AppendAllText(_logFilePath, logMessage + Environment.NewLine, Encoding.UTF8);
-    }
-    
-    public static void Log(string message, bool sendTelegram, ITelegramBotSettings telegramBotSettings,
-        string endpoint,string path, string method,LogType type = LogType.Info)
-    {
-        
-        Log(message, type);
 
-        // 2. Envío a Telegram si se solicita y el servicio existe
-        if (sendTelegram && _service != null)
+        if (notify && _notifier != null)
         {
-            
-            Task.Run(async () => {
-                try {
-                    await _service.SendAlertAsync(message,endpoint,path,method);
-                } catch { }
+            _ = Task.Run(async () =>
+            {
+                try
+                {
+                    await _notifier.NotifyAsync(logMessage);
+                }
+                catch (Exception ex)
+                {
+                    PersonalLogger.Log($"[LOGGER ERROR] Enviar notificacion fallida: {ex.Message}",LogType.Error);
+                }
             });
         }
-        
     }
+    
 
     private static void StartConsole()
     {
