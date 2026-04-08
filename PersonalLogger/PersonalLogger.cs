@@ -3,7 +3,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Text;
-using System.Threading.Tasks;
+
 
 namespace Loop.PersonalLogger;
 
@@ -44,7 +44,7 @@ public static class PersonalLogger
         }
     }
 
-    public static void Log(string message, LogType type = LogType.Info, string? notifyTo = null)
+    public static void Log(string message, LogType type = LogType.Info, string? appName = null)
     {
         if (!_initialized)
             Initialize();
@@ -52,8 +52,8 @@ public static class PersonalLogger
         string typeName = type.ToString().ToUpper();
         string logMessage = $"[{typeName}] {DateTime.Now:dd/MM/yyyy HH:mm:ss} {message}";
 
-        if (!String.IsNullOrWhiteSpace(notifyTo))
-            logMessage = $"[{typeName}] [{notifyTo}] {DateTime.Now:dd/MM/yyyy HH:mm:ss} {message}";
+        if (!String.IsNullOrWhiteSpace(appName))
+            logMessage = $"[{typeName}] [{appName}] {DateTime.Now:dd/MM/yyyy HH:mm:ss} {message}";
 
         // Consola principal (sin colores)
         Console.WriteLine(logMessage);
@@ -61,19 +61,17 @@ public static class PersonalLogger
         // Guardar en archivo UTF-8
         File.AppendAllText(_logFilePath, logMessage + Environment.NewLine, Encoding.UTF8);
 
-        if (!String.IsNullOrWhiteSpace(notifyTo) && _notifier != null)
+        if (!String.IsNullOrWhiteSpace(appName) && _notifier != null)
         {
-            _ = Task.Run(async () =>
+            try
             {
-                try
-                {
-                    await _notifier.NotifyAsync(logMessage);
-                }
-                catch (Exception ex)
-                {
-                    Log($"[LOGGER ERROR] Enviar notificacion fallida: {ex.Message}",LogType.Error);
-                }
-            });
+                // Ejecuta y espera síncronamente
+                _notifier.NotifyAsync(logMessage).GetAwaiter().GetResult();
+            }
+            catch (Exception ex)
+            {
+                Log($"[LOGGER ERROR] [{appName}]  Enviar notificacion fallida: {ex.Message}", LogType.Error);
+            }
         }
     }
     
@@ -110,7 +108,7 @@ ForEach-Object {
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"⚠️ No se pudo abrir la consola PowerShell extra: {ex.Message}");
+            Console.WriteLine($"No se pudo abrir la consola PowerShell extra: {ex.Message}");
         }
 
         AppDomain.CurrentDomain.ProcessExit += (_, _) =>
